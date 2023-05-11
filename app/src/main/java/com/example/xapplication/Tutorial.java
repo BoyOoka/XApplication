@@ -196,6 +196,20 @@ public class Tutorial implements IXposedHookLoadPackage {
             });
 
         }
+        if(lpparam.packageName.equals("com.tencent.tbs.demo")){
+            findAndHookMethod("com.tencent.smtt.sdk.WebView", lpparam.classLoader, "loadUrl", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    XposedBridge.log("tencent hooked param" +param.toString());
+                    try {
+                        super.afterHookedMethod(param);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        }
 
 
     }
