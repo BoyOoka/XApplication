@@ -1,6 +1,7 @@
 package com.example.xapplication;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.findClassIfExists;
 
 import android.graphics.Color;
 import android.widget.TextView;
@@ -196,13 +197,39 @@ public class Tutorial implements IXposedHookLoadPackage {
             });
 
         }
-        if(lpparam.packageName.equals("com.tencent.tbs.demo")){
-            findAndHookMethod("com.tencent.smtt.sdk.WebView", lpparam.classLoader, "loadUrl", new XC_MethodHook() {
+        Class sm_web = findClass("com.tencent.smtt.sdk.WebView", lpparam.classLoader);
+        if(sm_web != null){
+            XposedBridge.log("tencent hooked param");
+//            XposedBridge.hookAllConstructors(sm_web, new XC_MethodHook() {
+//                @Override
+//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                    XposedBridge.log(packageName + " new "  + sm_web.getName());
+//                    XposedHelpers.callMethod(sm_web, "loadUrl", "https://www.baidu.com");
+//                }
+//            });
+            findAndHookMethod("com.tencent.smtt.sdk.WebView", lpparam.classLoader, "getOriginalUrl", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
-                    XposedBridge.log("tencent hooked param" +param.toString());
+                    XposedBridge.log("my tencent hooked param");
                     try {
-                        super.afterHookedMethod(param);
+                        XposedHelpers.callMethod(param.thisObject, "getOriginalUrl");
+                        XposedHelpers.callMethod(param.thisObject, "loadUrl", "https://www.baidu.com");
+//                      super.afterHookedMethod(param);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            }
+
+        if(lpparam.packageName.equals("com.roysue.demo02")){
+            findAndHookMethod("com.roysue.demo02.MainActivity", lpparam.classLoader, "secret", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    XposedBridge.log("roysue hooked param");
+                    try {
+                            XposedHelpers.callMethod(param.thisObject, "secret");
+//                        super.afterHookedMethod(param);
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
