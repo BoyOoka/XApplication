@@ -198,7 +198,7 @@ public class Tutorial implements IXposedHookLoadPackage {
 
         }
         Class sm_web = findClass("com.tencent.smtt.sdk.WebView", lpparam.classLoader);
-        if(sm_web != null && markClassLoaderHooked(sm_web)){
+        if(sm_web != null){
             XposedBridge.log("tencent hooked param");
             XposedBridge.hookAllConstructors(sm_web, new XC_MethodHook() {
                 @Override
