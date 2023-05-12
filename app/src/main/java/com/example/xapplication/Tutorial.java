@@ -198,15 +198,23 @@ public class Tutorial implements IXposedHookLoadPackage {
 
         }
         Class sm_web = findClass("com.tencent.smtt.sdk.WebView", lpparam.classLoader);
-        if(sm_web != null){
+        if(sm_web != null && markClassLoaderHooked(sm_web)){
             XposedBridge.log("tencent hooked param");
-//            XposedBridge.hookAllConstructors(sm_web, new XC_MethodHook() {
-//                @Override
-//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                    XposedBridge.log(packageName + " new "  + sm_web.getName());
-//                    XposedHelpers.callMethod(sm_web, "loadUrl", "https://www.baidu.com");
-//                }
-//            });
+            XposedBridge.hookAllConstructors(sm_web, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    XposedBridge.log(packageName + " new "  + sm_web.getName());
+                    XposedHelpers.callMethod(sm_web, "loadUrl", "https://www.baidu.com");
+                }
+            });
+            XposedBridge.hookAllMethods(sm_web, "loadUrl", new XC_MethodHook(){
+               @Override
+               protected void beforeHookedMethod(MethodHookParam param) throws Throwable{
+                   XposedBridge.log("hook set url");
+                   param.args[0] = "https://www.baidu.com";
+               }
+            });
+            /*
             findAndHookMethod("com.tencent.smtt.sdk.WebView", lpparam.classLoader, "getOriginalUrl", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
@@ -219,7 +227,7 @@ public class Tutorial implements IXposedHookLoadPackage {
                         e.printStackTrace();
                     }
                 }
-            });
+            });*/
             }
 
         if(lpparam.packageName.equals("com.roysue.demo02")){
