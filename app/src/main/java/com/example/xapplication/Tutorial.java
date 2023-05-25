@@ -6,7 +6,11 @@ import static de.robv.android.xposed.XposedHelpers.findClassIfExists;
 import android.graphics.Color;
 import android.widget.TextView;
 
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
 import java.security.SecureClassLoader;
 
 import dalvik.system.BaseDexClassLoader;
@@ -21,6 +25,13 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Tutorial implements IXposedHookLoadPackage {
     private LRUCache<String, Boolean> hookedClassLoader = new LRUCache<>(10000);
+
+    public Tutorial() throws IOException {
+//        HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
+//        server.createContext("/i", new MyHttpHandler());
+//        server.start();
+    }
+
     private boolean markClassLoaderHooked(Class cla) {
         String key = cla.getName() + "@" + cla.getClassLoader().hashCode();
         if (hookedClassLoader.get(key) == null) {
